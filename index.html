@@ -24,12 +24,6 @@
 </head>
 
 <body>
-    <script>
-        window.onerror = function (msg, url, line, col, error) {
-            alert('Lỗi: ' + msg + '\nTại: ' + url + ':' + line);
-            return false;
-        };
-    </script>
     <div id="app" class="app-container">
         <!-- Containers to be populated by JS -->
         <div id="login-container" class="hidden"></div>
@@ -37,6 +31,7 @@
         <div id="partner-container" class="hidden"></div>
         <div id="debt-form-container" class="hidden"></div>
         <div id="debt-detail-container" class="hidden"></div>
+        <div id="settings-container" class="hidden"></div>
 
         <!-- Modal Container -->
         <div id="modal-container" class="hidden"
@@ -49,6 +44,7 @@
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
 
     <!-- Scripts -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
     <script src="js/mock-data.js"></script>
     <script src="js/state.js"></script>
     <script src="js/renderers.js"></script>

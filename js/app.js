@@ -5,7 +5,8 @@ const App = {
         'dashboard-container',
         'partner-container',
         'debt-form-container',
-        'debt-detail-container'
+        'debt-detail-container',
+        'settings-container'
     ],
     // State for UI only
     pinBuffer: '',
@@ -99,6 +100,9 @@ const App = {
                     const partner = AppState.getPartner(debt.partnerId);
                     container.innerHTML = Renderers.debtDetail(debt, partner);
                 }
+                break;
+            case 'settings':
+                container.innerHTML = Renderers.settings();
                 break;
         }
     },
@@ -241,6 +245,96 @@ const App = {
 
     viewDebtDetail(id) {
         this.navigateTo('debt-detail', id);
+    },
+
+    // --- Settings & Excel ---
+
+    exportToExcel() {
+        try {
+            const wb = XLSX.utils.book_new();
+
+            // Format Partners
+            const partnerData = AppState.data.partners.map(p => ({
+                "Mã ĐT": p.id,
+                "Họ Tên": p.name,
+                "Điện Thoại": p.phone
+            }));
+            const wsPartners = XLSX.utils.json_to_sheet(partnerData);
+            XLSX.utils.book_append_sheet(wb, wsPartners, "DoiTac");
+
+            // Format Debts
+            const debtData = AppState.data.debts.map(d => ({
+                "Mã Nợ": d.id,
+                "Mã ĐT": d.partnerId,
+                "Loại": d.type === 'receivable' ? 'Phải thu' : 'Phải trả',
+                "Số Tiền": d.amount,
+                "Nội Dung": d.content,
+                "Hạn Trả": d.dueDate,
+                "Ngày Tạo": d.createdAt
+            }));
+            const wsDebts = XLSX.utils.json_to_sheet(debtData);
+            XLSX.utils.book_append_sheet(wb, wsDebts, "SoNo");
+
+            // Save file
+            const fileName = `SoNo_NCB_${new Date().toISOString().slice(0, 10)}.xlsx`;
+            XLSX.writeFile(wb, fileName);
+        } catch (error) {
+            alert('Lỗi khi xuất file: ' + error.message);
+        }
+    },
+
+    handleImportExcel(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        if (!confirm('CẢNH BÁO: Việc nhập file sẽ GHI ĐÈ toàn bộ dữ liệu hiện tại. Bạn có chắc chắn không?')) {
+            event.target.value = ''; // Reset input
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+
+                // Read Partners
+                const wsPartners = workbook.Sheets["DoiTac"];
+                if (wsPartners) {
+                    const partners = XLSX.utils.sheet_to_json(wsPartners);
+                    AppState.data.partners = partners.map(p => ({
+                        id: p["Mã ĐT"] || ('p' + Date.now()),
+                        name: p["Họ Tên"],
+                        phone: p["Điện Thoại"]
+                    }));
+                }
+
+                // Read Debts
+                const wsDebts = workbook.Sheets["SoNo"];
+                if (wsDebts) {
+                    const debts = XLSX.utils.sheet_to_json(wsDebts);
+                    AppState.data.debts = debts.map(d => ({
+                        id: d["Mã Nợ"] || ('d' + Date.now()),
+                        partnerId: d["Mã ĐT"],
+                        type: d["Loại"] === 'Phải thu' ? 'receivable' : 'payable',
+                        amount: d["Số Tiền"],
+                        paid: 0, // Reset paid for simplicity or could export history too
+                        content: d["Nội Dung"],
+                        dueDate: d["Hạn Trả"],
+                        createdAt: d["Ngày Tạo"] || new Date().toISOString(),
+                        history: []
+                    }));
+                }
+
+                AppState.save();
+                alert('Đã khôi phục dữ liệu thành công!');
+                this.navigateTo('dashboard');
+
+            } catch (error) {
+                alert('Lỗi đọc file: ' + error.message);
+            }
+        };
+        reader.readAsArrayBuffer(file);
     },
 
     deleteDebt(id) {

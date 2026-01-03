@@ -41,9 +41,12 @@ const Renderers = {
     // --- Dashboard ---
     dashboard(summary, debts, searchQuery = '', typeFilter = 'all') {
         return `
-            <div class="top-nav glass-card" style="margin: 1rem; border-radius: 12px;">
-                <h2 style="margin:0; font-size: 1.1rem;">Tổng quan</h2>
-                <div style="font-size: 0.9rem;">${new Date().toLocaleDateString('vi-VN')}</div>
+            <div class="top-nav glass-card" style="margin: 1rem; border-radius: 12px; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h2 style="margin:0; font-size: 1.1rem;">Tổng quan</h2>
+                    <div style="font-size: 0.9rem;">${new Date().toLocaleDateString('vi-VN')}</div>
+                </div>
+                <button class="btn-icon" onclick="App.navigateTo('settings')"><i class="ri-settings-4-line"></i></button>
             </div>
 
             <div class="summary-cards">
@@ -362,6 +365,45 @@ const Renderers = {
 
                     <button type="submit" class="btn btn-primary">Lưu Thay Đổi</button>
                 </form>
+            </div>
+        `;
+    }
+    settings() {
+        return `
+            <div class="top-nav">
+                <button class="btn-icon" onclick="App.navigateTo('dashboard')"><i class="ri-arrow-left-line"></i></button>
+                <h2>Cài Đặt & Sao Lưu</h2>
+                <div style="width: 32px;"></div>
+            </div>
+
+            <div style="padding: 1rem;">
+                <div class="card glass-card">
+                    <h3><i class="ri-database-2-line" style="color: var(--accent-gold); margin-right: 8px;"></i> Sao lưu dữ liệu</h3>
+                    <p class="text-xs text-muted" style="margin-bottom: 1rem;">
+                        Xuất dữ liệu ra file Excel để lưu trên Google Drive hoặc máy tính.
+                    </p>
+                    
+                    <button class="btn btn-outline" style="width: 100%; margin-bottom: 0.5rem;" onclick="App.exportToExcel()">
+                        <i class="ri-download-cloud-line"></i> Xuất ra Excel (.xlsx)
+                    </button>
+                    
+                    <div style="position: relative; overflow: hidden; display: inline-block; width: 100%;">
+                        <button class="btn" style="width: 100%; background: var(--secondary-bg); color: var(--text-primary);">
+                            <i class="ri-upload-cloud-line"></i> Nhập từ Excel
+                        </button>
+                        <input type="file" onchange="App.handleImportExcel(event)" accept=".xlsx, .xls" 
+                            style="font-size: 100px; position: absolute; left: 0; top: 0; opacity: 0; cursor: pointer;">
+                    </div>
+                </div>
+
+                 <div class="card">
+                    <h3>Thông tin ứng dụng</h3>
+                    <div class="text-sm">
+                        <p><strong>Phiên bản:</strong> 1.2.0 (GitHub Pages)</p>
+                        <p><strong>Tác giả:</strong> AI Assistant</p>
+                        <p class="text-muted" style="margin-top: 5px;">Dữ liệu được lưu trữ an toàn trong trình duyệt của bạn.</p>
+                    </div>
+                </div>
             </div>
         `;
     }

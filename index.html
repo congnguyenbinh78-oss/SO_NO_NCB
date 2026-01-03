@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Nợ HKD NGUYEN CONG BINH</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- PWA Settings -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/svg+xml" href="icon.svg">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+</head>
+
+<body>
+    <div id="app" class="app-container">
+        <!-- Containers to be populated by JS -->
+        <div id="login-container" class="hidden"></div>
+        <div id="dashboard-container" class="hidden"></div>
+        <div id="partner-container" class="hidden"></div>
+        <div id="debt-form-container" class="hidden"></div>
+        <div id="debt-detail-container" class="hidden"></div>
+
+        <!-- Modal Container -->
+        <div id="modal-container" class="hidden"
+            style="position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 1rem;">
+            <!-- Modals injected here -->
+        </div>
+    </div>
+
+    <!-- Icons provided by RemixIcon (via CDN for simplicity in Vanilla JS) -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+
+    <!-- Scripts -->
+    <script src="js/mock-data.js?v=final"></script>
+    <script src="js/state.js?v=final"></script>
+    <script src="js/renderers.js?v=final"></script>
+    <script src="js/app.js?v=final"></script>
+
+    <script>
+        // PWA Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then((reg) => {
+                        console.log('SW Registered');
+                        // Force update
+                        reg.update();
+                    })
+                    .catch((err) => console.log('SW Fail', err));
+            });
+        }
+    </script>
+</body>
+
+</html>

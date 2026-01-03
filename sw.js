@@ -1,4 +1,4 @@
-const CACHE_NAME = 'hkd-ncb-v7';
+const CACHE_NAME = 'hkd-ncb-v8';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',

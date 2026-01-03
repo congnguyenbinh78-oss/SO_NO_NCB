@@ -1,4 +1,4 @@
-const CACHE_NAME = 'hkd-ncb-v8';
+const CACHE_NAME = 'hkd-ncb-v9-force-update';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
@@ -15,6 +15,7 @@ const ASSETS_TO_CACHE = [
 // Install Event: Cache files
 self.addEventListener('install', (event) => {
     console.log('[Service Worker] Installing...');
+    self.skipWaiting(); // FORCE ACTIVE IMMEDIATELY
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
             console.log('[Service Worker] Caching all: ', ASSETS_TO_CACHE);

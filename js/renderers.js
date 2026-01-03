@@ -43,7 +43,7 @@ const Renderers = {
         return `
             <div class="top-nav glass-card" style="margin: 1rem; border-radius: 12px; display: flex; justify-content: space-between; align-items: center;">
                 <div>
-                    <h2 style="margin:0; font-size: 1.1rem;">Tổng quan</h2>
+                    <h2 style="margin:0; font-size: 1.1rem;">Tổng quan <span style="font-size: 0.7rem; background: var(--accent-gold); color: #000; padding: 2px 6px; border-radius: 4px;">v1.2</span></h2>
                     <div style="font-size: 0.9rem;">${new Date().toLocaleDateString('vi-VN')}</div>
                 </div>
                 <button class="btn-icon" onclick="App.navigateTo('settings')"><i class="ri-settings-4-line"></i></button>

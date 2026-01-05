@@ -278,12 +278,34 @@ const App = {
             // Generate Filename
             const fileName = `SoNo_NCB_${new Date().toISOString().slice(0, 10)}.xlsx`;
 
-            // Write to Blob
+            // Prepare Blob
             const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
             const blob = new Blob([wbout], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-            const file = new File([blob], fileName, { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
 
-            // Check if Web Share API is supported (Mobile)
+            // Strategy 1: Desktop "Save As" (File System Access API)
+            if (window.showSaveFilePicker) {
+                try {
+                    const handle = await window.showSaveFilePicker({
+                        suggestedName: fileName,
+                        types: [{
+                            description: 'Excel File',
+                            accept: { 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'] },
+                        }],
+                    });
+                    const writable = await handle.createWritable();
+                    await writable.write(blob);
+                    await writable.close();
+                    alert('Đã lưu file thành công!');
+                    return;
+                } catch (err) {
+                    if (err.name === 'AbortError') return; // User cancelled
+                    console.log('File Picker failed, trying fallback...');
+                }
+            }
+
+            // Strategy 2: Mobile Share (Web Share API)
+            // Note: Must be checked before generic download, but after File Picker for hybrid devices
+            const file = new File([blob], fileName, { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
             if (navigator.canShare && navigator.canShare({ files: [file] })) {
                 try {
                     await navigator.share({
@@ -291,21 +313,20 @@ const App = {
                         title: 'Sao lưu Sổ Nợ',
                         text: 'File sao lưu dữ liệu Sổ Nợ NCB',
                     });
-                    console.log('Shared successfully');
+                    return; // Share successful
                 } catch (error) {
-                    if (error.name !== 'AbortError') {
-                        console.error('Share failed:', error);
-                        // Fallback to classic download if share fails (but not if user cancelled)
-                        XLSX.writeFile(wb, fileName);
-                    }
+                    if (error.name === 'AbortError') return; // User cancelled
+                    console.log('Share failed, trying fallback...');
                 }
-            } else {
-                // Fallback for Desktop
-                XLSX.writeFile(wb, fileName);
             }
 
+            // Strategy 3: Classic Download (Fallback)
+            XLSX.writeFile(wb, fileName);
+            // Notify user because mobile downloads can be subtle
+            setTimeout(() => alert('File đã được tải xuống máy (hãy kiểm tra mục Download/Tệp).'), 500);
+
         } catch (error) {
-            alert('Lỗi khi xuất file: ' + error.message);
+            alert('Lỗi hệ thống khi xuất file: ' + error.message);
             console.error(error);
         }
     },

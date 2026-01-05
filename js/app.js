@@ -251,6 +251,11 @@ const App = {
 
     async exportToExcel() {
         try {
+            // Debug: Check Security
+            if (!window.isSecureContext) {
+                alert('Cảnh báo: Trang web không bảo mật (không phải HTTPS). Tính năng chọn tệp/chia sẻ sẽ không hoạt động.');
+            }
+
             const wb = XLSX.utils.book_new();
 
             // Format Partners
@@ -282,9 +287,10 @@ const App = {
             const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
             const blob = new Blob([wbout], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
 
-            // Strategy 1: Desktop "Save As" (File System Access API)
+            // Strategy 1: Desktop "Save As"
             if (window.showSaveFilePicker) {
                 try {
+                    // alert('Đang thử mở hộp thoại lưu...'); 
                     const handle = await window.showSaveFilePicker({
                         suggestedName: fileName,
                         types: [{
@@ -298,35 +304,42 @@ const App = {
                     alert('Đã lưu file thành công!');
                     return;
                 } catch (err) {
-                    if (err.name === 'AbortError') return; // User cancelled
-                    console.log('File Picker failed, trying fallback...');
+                    if (err.name === 'AbortError') return;
+                    alert('Lỗi khi mở hộp thoại lưu: ' + err.message);
                 }
+            } else {
+                // alert('Trình duyệt này không hỗ trợ chọn nơi lưu (Save As). Sẽ tải xuống tự động.');
             }
 
-            // Strategy 2: Mobile Share (Web Share API)
-            // Note: Must be checked before generic download, but after File Picker for hybrid devices
+            // Strategy 2: Mobile Share
             const file = new File([blob], fileName, { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            // Remove canShare check for debugging, just try share if navigator.share exists
+            if (navigator.share) {
                 try {
+                    if (navigator.canShare && !navigator.canShare({ files: [file] })) {
+                        // alert('Thiết bị không hỗ trợ chia sẻ file này. Đang chuyển sang tải xuống...');
+                        throw new Error('File sharing not supported');
+                    }
+
                     await navigator.share({
                         files: [file],
                         title: 'Sao lưu Sổ Nợ',
                         text: 'File sao lưu dữ liệu Sổ Nợ NCB',
                     });
-                    return; // Share successful
+                    return;
                 } catch (error) {
-                    if (error.name === 'AbortError') return; // User cancelled
-                    console.log('Share failed, trying fallback...');
+                    if (error.name === 'AbortError') return;
+                    // alert('Lỗi chia sẻ: ' + error.message + '. Đang tải xuống...');
+                    console.log('Share failed', error);
                 }
             }
 
-            // Strategy 3: Classic Download (Fallback)
+            // Strategy 3: Client Side Download
             XLSX.writeFile(wb, fileName);
-            // Notify user because mobile downloads can be subtle
-            setTimeout(() => alert('File đã được tải xuống máy (hãy kiểm tra mục Download/Tệp).'), 500);
+            alert('Đã tải xuống: ' + fileName + '\n(Kiểm tra thư mục Download)');
 
         } catch (error) {
-            alert('Lỗi hệ thống khi xuất file: ' + error.message);
+            alert('Lỗi NGHIÊM TRỌNG: ' + error.message);
             console.error(error);
         }
     },

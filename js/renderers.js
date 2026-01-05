@@ -384,7 +384,7 @@ const Renderers = {
                     </p>
                     
                     <button class="btn btn-outline" style="width: 100%; margin-bottom: 0.5rem;" onclick="App.exportToExcel()">
-                        <i class="ri-download-cloud-line"></i> Xuất ra Excel (.xlsx)
+                        <i class="ri-share-forward-line"></i> Xuất & Chia sẻ (Drive/Zalo)
                     </button>
                     
                     <div style="position: relative; overflow: hidden; display: inline-block; width: 100%;">

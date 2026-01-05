@@ -249,7 +249,7 @@ const App = {
 
     // --- Settings & Excel ---
 
-    exportToExcel() {
+    async exportToExcel() {
         try {
             const wb = XLSX.utils.book_new();
 
@@ -275,11 +275,38 @@ const App = {
             const wsDebts = XLSX.utils.json_to_sheet(debtData);
             XLSX.utils.book_append_sheet(wb, wsDebts, "SoNo");
 
-            // Save file
+            // Generate Filename
             const fileName = `SoNo_NCB_${new Date().toISOString().slice(0, 10)}.xlsx`;
-            XLSX.writeFile(wb, fileName);
+
+            // Write to Blob
+            const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+            const blob = new Blob([wbout], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            const file = new File([blob], fileName, { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+
+            // Check if Web Share API is supported (Mobile)
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                try {
+                    await navigator.share({
+                        files: [file],
+                        title: 'Sao lưu Sổ Nợ',
+                        text: 'File sao lưu dữ liệu Sổ Nợ NCB',
+                    });
+                    console.log('Shared successfully');
+                } catch (error) {
+                    if (error.name !== 'AbortError') {
+                        console.error('Share failed:', error);
+                        // Fallback to classic download if share fails (but not if user cancelled)
+                        XLSX.writeFile(wb, fileName);
+                    }
+                }
+            } else {
+                // Fallback for Desktop
+                XLSX.writeFile(wb, fileName);
+            }
+
         } catch (error) {
             alert('Lỗi khi xuất file: ' + error.message);
+            console.error(error);
         }
     },
 

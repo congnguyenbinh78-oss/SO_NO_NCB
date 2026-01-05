@@ -367,7 +367,7 @@ const Renderers = {
                 </form>
             </div>
         `;
-    }
+    },
     settings() {
         return `
             <div class="top-nav">

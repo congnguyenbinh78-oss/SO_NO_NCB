@@ -1,4 +1,4 @@
-const CACHE_NAME = 'hkd-ncb-v9-force-update';
+const CACHE_NAME = 'hkd-ncb-v10-force-update';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',

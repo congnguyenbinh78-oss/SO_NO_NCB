@@ -391,7 +391,7 @@ const Renderers = {
                         <button class="btn" style="width: 100%; background: var(--secondary-bg); color: var(--text-primary);">
                             <i class="ri-upload-cloud-line"></i> Nhập từ Excel
                         </button>
-                        <input type="file" onchange="App.handleImportExcel(event)" accept=".xlsx, .xls" 
+                        <input type="file" onchange="App.handleImportExcel(event)" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel, .xlsx, .xls" 
                             style="font-size: 100px; position: absolute; left: 0; top: 0; opacity: 0; cursor: pointer;">
                     </div>
                 </div>

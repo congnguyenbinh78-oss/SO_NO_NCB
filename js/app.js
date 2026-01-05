@@ -249,7 +249,7 @@ const App = {
 
     // --- Settings & Excel ---
 
-    async exportToExcel() {
+    async exportToExcel(forceDownload = false) {
         try {
             // Debug: Check Security
             if (!window.isSecureContext) {
@@ -288,7 +288,7 @@ const App = {
             const blob = new Blob([wbout], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
 
             // Strategy 1: Desktop "Save As"
-            if (window.showSaveFilePicker) {
+            if (!forceDownload && window.showSaveFilePicker) {
                 try {
                     // alert('Đang thử mở hộp thoại lưu...'); 
                     const handle = await window.showSaveFilePicker({
@@ -314,7 +314,7 @@ const App = {
             // Strategy 2: Mobile Share
             const file = new File([blob], fileName, { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
             // Remove canShare check for debugging, just try share if navigator.share exists
-            if (navigator.share) {
+            if (!forceDownload && navigator.share) {
                 try {
                     if (navigator.canShare && !navigator.canShare({ files: [file] })) {
                         // alert('Thiết bị không hỗ trợ chia sẻ file này. Đang chuyển sang tải xuống...');
@@ -330,6 +330,7 @@ const App = {
                 } catch (error) {
                     if (error.name === 'AbortError') return;
                     // alert('Lỗi chia sẻ: ' + error.message + '. Đang tải xuống...');
+                    alert('Lỗi chia sẻ: ' + error.message + '. Đang chuyển sang tải xuống...');
                     console.log('Share failed', error);
                 }
             }

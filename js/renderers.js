@@ -386,6 +386,10 @@ const Renderers = {
                     <button class="btn btn-outline" style="width: 100%; margin-bottom: 0.5rem;" onclick="App.exportToExcel()">
                         <i class="ri-share-forward-line"></i> Xuất & Chia sẻ (Drive/Zalo)
                     </button>
+
+                    <button class="btn btn-outline" style="width: 100%; margin-bottom: 0.5rem; border-color: var(--text-muted); color: var(--text-muted);" onclick="App.exportToExcel(true)">
+                        <i class="ri-download-line"></i> Tải xuống (Dự phòng)
+                    </button>
                     
                     <div style="position: relative; overflow: hidden; display: inline-block; width: 100%;">
                         <button class="btn" style="width: 100%; background: var(--secondary-bg); color: var(--text-primary);">
